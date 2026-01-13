@@ -133,6 +133,11 @@ theorem mul_transvection_apply_of_ne (a b : n) (hb : b ≠ j) (c : R) (M : Matri
 theorem det_transvection_of_ne (h : i ≠ j) (c : R) : det (transvection i j c) = 1 := by
   rw [← updateRow_eq_transvection i j, det_updateRow_add_smul_self _ h, det_one]
 
+def transvection.monoidHom (i j : n) (h : i ≠ j := by simp) : Multiplicative R →* Matrix n n R where
+  toFun := fun c => transvection i j c.toAdd
+  map_one' := by simp
+  map_mul' := by simp [transvection_mul_transvection_same, h]
+
 end
 
 variable (R n)

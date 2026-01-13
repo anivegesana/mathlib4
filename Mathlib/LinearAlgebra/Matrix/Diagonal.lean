@@ -30,6 +30,23 @@ universe u v w
 
 namespace Matrix
 
+section NonAssocSemiring
+
+variable {n R : Type*} [DecidableEq n] [NonAssocSemiring R] (i : n) (s : R)
+
+abbrev diagelim := Matrix.diagonal (Pi.mulSingle i s)
+
+theorem diagelim' : diagelim i s = Matrix.diagonal fun k ↦ if i = k then s else 1 := by aesop
+
+lemma diagelim_one : diagelim i (1 : R) = 1 := by simp [diagelim]
+
+def diagelim.monoidHom [Fintype n] : R →* Matrix n n R where
+  toFun := diagelim i
+  map_one' := diagelim_one i
+  map_mul' := by simp [diagelim']; aesop
+
+end NonAssocSemiring
+
 section CommSemiring
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
