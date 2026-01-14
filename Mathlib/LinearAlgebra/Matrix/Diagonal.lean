@@ -38,9 +38,8 @@ abbrev diagelim := Matrix.diagonal (Pi.mulSingle i s)
 
 theorem diagelim' : diagelim i s = Matrix.diagonal fun k ↦ if i = k then s else 1 := by aesop
 
-theorem updateRow_eq_diagelim [Finite n] (c : R) :
-    updateRow (1 : Matrix n n R) i (c • (1 : Matrix n n R) i) =
-      diagelim i c := by
+theorem updateRow_eq_diagelim :
+    updateRow (1 : Matrix n n R) i (s • (1 : Matrix n n R) i) = diagelim i s := by
   unfold updateRow diagelim Pi.mulSingle diagonal Function.update
   aesop
 
