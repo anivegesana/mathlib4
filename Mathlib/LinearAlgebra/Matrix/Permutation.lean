@@ -90,9 +90,8 @@ theorem permMatrix_mul [NonAssocSemiring R] :
 
 theorem permMatrix_inv [CommRing R] :
     (σ.permMatrix R)⁻¹ = σ⁻¹.permMatrix R := by
-  rw [permMatrix, PEquiv.toMatrix_toPEquiv_eq, ← coe_one, inv_submatrix_equiv, inv_one]
   ext
-  simp only [submatrix_apply, Matrix.one_apply]
+  simp [PEquiv.toMatrix_toPEquiv_eq, ← coe_one, Matrix.one_apply]
   aesop
 
 end SubgroupProperties
