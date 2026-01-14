@@ -74,16 +74,14 @@ lemma vecMul_permMatrix {v : n → R} [CommRing R] :
   ext j
   simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq]
 
-section
+section SubgroupProperties
 
 open Perm
 
 variable (R)
 
 omit [Fintype n] in
-theorem permMatrix_one [One R] [Zero R] : (1 : Perm n).permMatrix R = 1 := by
-  unfold permMatrix
-  aesop
+theorem permMatrix_one [One R] [Zero R] : (1 : Perm n).permMatrix R = 1 := by aesop
 
 theorem permMatrix_mul [NonAssocSemiring R] :
     σ.permMatrix R * π.permMatrix R = (π * σ).permMatrix R := by
@@ -92,14 +90,12 @@ theorem permMatrix_mul [NonAssocSemiring R] :
 
 theorem permMatrix_inv [CommRing R] :
     (σ.permMatrix R)⁻¹ = σ⁻¹.permMatrix R := by
-  unfold permMatrix
-  simp only [PEquiv.toMatrix_toPEquiv_eq]
-  rw [← coe_one, inv_submatrix_equiv, inv_one, coe_one]
-  ext i j
+  rw [permMatrix, PEquiv.toMatrix_toPEquiv_eq, ← coe_one, inv_submatrix_equiv, inv_one]
+  ext
   simp only [submatrix_apply, Matrix.one_apply]
   aesop
 
-end
+end SubgroupProperties
 
 open scoped Matrix.Norms.L2Operator
 

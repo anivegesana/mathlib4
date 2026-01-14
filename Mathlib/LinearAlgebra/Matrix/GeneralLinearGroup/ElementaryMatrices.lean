@@ -51,19 +51,8 @@ namespace Matrix
 
 theorem permMatrix_mem_orthogonalGroup [CommRing R] (σ : Equiv.Perm n) :
     σ.permMatrix R ∈ orthogonalGroup n R := by
-  rw [Matrix.mem_orthogonalGroup_iff, transpose_permMatrix, ← permMatrix_inv,
-    Matrix.mul_nonsing_inv]
+  rw [mem_orthogonalGroup_iff, transpose_permMatrix, ← permMatrix_inv, mul_nonsing_inv]
   rw [det_permutation]
-  have h' : σ.sign = 1 ∨ σ.sign = -1 := by
-    cases Equiv.Perm.sign_eq_one_or_eq_neg_one σ <;> rename_i h <;> simp [h]
-  cases h' <;> rename_i h'
-  · have h'' : IsUnit ((1 : ℤˣ) : R) := by
-      simp
-    rw [← h'] at h''
-    exact h''
-  have h'' : IsUnit ((-1 : ℤˣ) : R) := by
-    simp
-  rw [← h'] at h''
-  exact h''
+  cases Equiv.Perm.sign_eq_one_or_eq_neg_one σ <;> aesop
 
 end Matrix
