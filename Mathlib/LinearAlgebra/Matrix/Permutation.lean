@@ -10,7 +10,6 @@ public import Mathlib.Data.Matrix.PEquiv
 public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
 /-!
 # Permutation matrices
@@ -32,7 +31,7 @@ This file defines the matrix associated with a permutation
 
 open Equiv
 
-variable {n R : Type*} [DecidableEq n] (σ : Perm n)
+variable {n R : Type*} [DecidableEq n] (σ π : Perm n)
 
 variable (R) in
 /-- the permutation matrix associated with an `Equiv.Perm` -/
@@ -75,17 +74,32 @@ lemma vecMul_permMatrix {v : n → R} [CommRing R] :
   ext j
   simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq]
 
-variable (R) in
+section
+
+open Perm
+
+variable (R)
+
 omit [Fintype n] in
-theorem permMatrix_one [Semiring R] : (1 : Perm n).permMatrix R = 1 := by
-  unfold Perm.permMatrix
+theorem permMatrix_one [One R] [Zero R] : (1 : Perm n).permMatrix R = 1 := by
+  unfold permMatrix
   aesop
 
-variable (R) in
-theorem permMatrix_mul [Semiring R] (π ρ : Perm n) :
-    π.permMatrix R * ρ.permMatrix R = (ρ * π).permMatrix R := by
+theorem permMatrix_mul [NonAssocSemiring R] :
+    σ.permMatrix R * π.permMatrix R = (π * σ).permMatrix R := by
   rw [← PEquiv.toMatrix_trans, Perm.permMatrix, ← toPEquiv_trans]
   congr
+
+theorem permMatrix_inv [CommRing R] :
+    (σ.permMatrix R)⁻¹ = σ⁻¹.permMatrix R := by
+  unfold permMatrix
+  simp only [PEquiv.toMatrix_toPEquiv_eq]
+  rw [← coe_one, inv_submatrix_equiv, inv_one, coe_one]
+  ext i j
+  simp only [submatrix_apply, Matrix.one_apply]
+  aesop
+
+end
 
 open scoped Matrix.Norms.L2Operator
 
@@ -112,50 +126,3 @@ theorem permMatrix_l2_opNorm_eq [Nonempty n] : ‖σ.permMatrix 𝕜‖ = 1 :=
       (σ.permMatrix 𝕜).l2_opNorm_mulVec (WithLp.toLp _ (Pi.single default 1))
 
 end Matrix
-
-namespace Equiv.Perm.permMatrix
-
-
-def submonoid_of_GL [Fintype n] [q : Semiring R] : Submonoid (GL n R) where
-  carrier := {x | ∃ (σ : Perm n), x.val = σ.permMatrix R}
-  one_mem' := by
-    dsimp
-    use 1
-    rw [Matrix.permMatrix_one]
-  mul_mem' ha hb := by
-    rw [Set.mem_setOf_eq] at *
-    choose π ha using ha
-    choose ρ hb using hb
-    use ρ * π
-    rw [Units.val_mul, ha, hb, Matrix.permMatrix_mul]
-
--- set_option trace.Meta.synthInstance true in
-def subgroup_of_GL [Fintype n] [q :CommRing R] : Subgroup (GL n R) where
-  carrier := {x | ∃ (σ : Perm n), x.val = σ.permMatrix R}
-  one_mem' := by
-    dsimp
-    use 1
-    rw [Matrix.permMatrix_one]
-  mul_mem' ha hb := by
-    rw [Set.mem_setOf_eq] at *
-    choose π ha using ha
-    choose ρ hb using hb
-    use ρ * π
-    rw [Units.val_mul, ha, hb, Matrix.permMatrix_mul]
-  -- __ := submonoid_of_GL
-  inv_mem' hx := by
-    rw [Set.mem_setOf_eq] at *
-    choose π hx using hx
-    use π⁻¹
-    have h (x : GL n R) : (x : Matrix n n R)⁻¹ = x⁻¹ := by rw [Matrix.coe_units_inv]
-    rw [← h, hx]
-    unfold permMatrix
-    simp only [PEquiv.toMatrix_toPEquiv_eq]
-    rw [← coe_one]
-    rw [Matrix.inv_submatrix_equiv]
-    simp only [inv_one, coe_one]
-    ext i j
-    simp only [Matrix.submatrix_apply, Matrix.one_apply]
-    aesop
-
-end Equiv.Perm.permMatrix
