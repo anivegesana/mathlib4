@@ -51,8 +51,7 @@ namespace Matrix
 
 theorem permMatrix_mem_orthogonalGroup [CommRing R] (σ : Equiv.Perm n) :
     σ.permMatrix R ∈ orthogonalGroup n R := by
-  rw [mem_orthogonalGroup_iff, transpose_permMatrix, ← permMatrix_inv, mul_nonsing_inv]
-  rw [det_permutation]
-  cases Equiv.Perm.sign_eq_one_or_eq_neg_one σ <;> aesop
+  rw [mem_orthogonalGroup_iff, transpose_permMatrix, ← permMatrix_inv]
+  cases Int.isUnit_eq_one_or (by use σ.sign) <;> aesop
 
 end Matrix
